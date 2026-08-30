@@ -1,70 +1,114 @@
 "use client";
-import React, { useState } from 'react';
-import { PSUS } from '../../lib/data';
-import PSUCard from '../../components/PSUCard';
+
+import { useState } from "react";
+import { PSUS } from "@/lib/data";
+import PSUCard from "@/components/PSUCard";
+
+const branches = [
+  "All",
+  "⚡ Electrical",
+  "🖥️ CSE/IT",
+  "⚙️ Mechanical",
+  "🏗️ Civil",
+  "📡 Electronics",
+  "⚗️ Chemical",
+  "⛏️ Mining",
+  "⚗️ Metallurgy",
+  "✈️ Aerospace",
+  "📊 Management",
+  "💰 Finance",
+  "🔬 Science",
+];
+
+const categories = ["All", "Maharatna", "Navratna", "Bank", "Defence", "Research"];
 
 export default function ExplorePage() {
-  const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('All');
-  const [gateRequired, setGateRequired] = useState(false);
+  const [selectedBranch, setSelectedBranch] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchText, setSearchText] = useState("");
 
-  const filteredPSUs = PSUS.filter(psu => {
-    const matchesSearch = psu.name.toLowerCase().includes(search.toLowerCase()) || psu.fullName.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = category === 'All' || psu.category === category;
-    const matchesGate = !gateRequired || psu.recruitments.some(r => r.gateRequired);
-    return matchesSearch && matchesCategory && matchesGate;
+  const filteredPSUs = PSUS.filter((psu) => {
+    const matchesSearch =
+      psu.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      psu.fullName.toLowerCase().includes(searchText.toLowerCase());
+    
+    // Extract branch name from emoji string
+    const branchName = selectedBranch.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{FE0F}\s]/gu, "").trim();
+    
+    const matchesBranch = selectedBranch === "All" || psu.branches.some(b => b.includes(branchName) || selectedBranch.includes(b));
+    const matchesCategory = selectedCategory === "All" || psu.category === selectedCategory;
+
+    return matchesSearch && matchesBranch && matchesCategory;
   });
 
-  const activeCount = filteredPSUs.reduce((acc, psu) => acc + psu.activeRecruitments, 0);
+  const totalActiveRecruitments = filteredPSUs.reduce((acc, psu) => acc + psu.activeRecruitments, 0);
 
   return (
-    <div style={{ padding: '40px 24px', maxWidth: '1200px', margin: '0 auto' }}>
-      <div style={{ marginBottom: '40px' }}>
-        <h1 style={{ fontSize: '2.5rem', marginBottom: '8px' }}>Explore PSUs</h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem' }}>Track recruitments across 50+ Public Sector Undertakings</p>
-      </div>
-
-      <div className="glass-card" style={{ padding: '24px', marginBottom: '40px', display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'center' }}>
-        <input 
-          type="text" 
-          placeholder="Search by name or full name..." 
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          style={{ flex: '1 1 300px' }}
-        />
-        <select 
-          value={category} 
-          onChange={e => setCategory(e.target.value)}
-          style={{ flex: '1 1 200px' }}
-        >
-          <option value="All">All Categories</option>
-          <option value="Maharatna">Maharatna</option>
-          <option value="Navratna">Navratna</option>
-          <option value="Miniratna">Miniratna</option>
-          <option value="Bank">Bank</option>
-          <option value="Defence">Defence</option>
-        </select>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', background: 'rgba(255,255,255,0.05)', padding: '12px 16px', borderRadius: '8px', border: '1px solid var(--border)' }}>
-          <input 
-            type="checkbox" 
-            checked={gateRequired} 
-            onChange={e => setGateRequired(e.target.checked)} 
-            style={{ width: 'auto' }}
+    <main className="max-w-7xl mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-6">Explore PSUs</h1>
+      
+      <div className="mb-8 space-y-4">
+        {/* Search */}
+        <div className="w-full md:w-96">
+          <input
+            type="text"
+            placeholder="Search PSUs..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
           />
-          GATE Required Only
-        </label>
+        </div>
+
+        {/* Branch Filters */}
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          {branches.map((branch) => (
+            <button
+              key={branch}
+              onClick={() => setSelectedBranch(branch)}
+              className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                selectedBranch === branch
+                  ? "bg-blue-600 text-white branch-tag active"
+                  : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 branch-tag"
+              }`}
+            >
+              {branch}
+            </button>
+          ))}
+        </div>
+
+        {/* Category Filters */}
+        <div className="flex gap-2 flex-wrap">
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                selectedCategory === category
+                  ? "bg-purple-600 text-white"
+                  : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+              }`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
       </div>
 
-      <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontSize: '1.1rem', fontWeight: 600 }}>{filteredPSUs.length} PSUs found</span>
-        <span className="badge" style={{ background: 'var(--success)', color: '#000' }}>{activeCount} Active Recruitments</span>
+      <div className="mb-6 text-gray-600 dark:text-gray-400 font-medium">
+        {filteredPSUs.length} PSUs found &middot; {totalActiveRecruitments} active recruitments
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
-        {filteredPSUs.map(psu => (
-          <PSUCard key={psu.id} psu={psu} />
-        ))}
-      </div>
-    </div>
+      {filteredPSUs.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredPSUs.map((psu) => (
+            <PSUCard key={psu.id} psu={psu} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-20 text-gray-500">
+          <p className="text-xl">No PSUs found. Try changing your filters.</p>
+        </div>
+      )}
+    </main>
   );
 }

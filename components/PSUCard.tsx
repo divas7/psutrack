@@ -1,73 +1,136 @@
-"use client";
-import React from 'react';
-import Link from 'next/link';
-import { PSU } from '../lib/data';
-import PhasePipeline from './PhasePipeline';
+'use client';
 
-interface Props {
+import Link from 'next/link';
+import PhasePipeline, { Phase, PhaseName } from './PhasePipeline';
+
+export type Branch = 'Electrical' | 'Mechanical' | 'Civil' | 'CSE/IT' | 'Electronics' | 'Chemical' | 'Mining' | 'Metallurgy' | 'Management' | 'Finance' | 'HR' | 'Aerospace' | 'Geology' | 'Science' | 'All Branches';
+
+export interface SalaryInfo {
+  grade: string;
+  payScale: string;
+  ctcRange: string;
+  inHandRange: string;
+  hasBond: boolean;
+  bondAmount?: string;
+  bondPeriod?: string;
+  perks: string[];
+  source: string;
+}
+
+export interface PostDetail {
+  postName: string;
+  branch: Branch;
+  vacancies: number;
+  gateRequired: boolean;
+  minQualification: string;
+}
+
+export interface Recruitment {
+  id: string;
+  title: string;
+  postName: string;
+  totalVacancies: number;
+  posts: PostDetail[];
+  qualifications: string[];
+  gateRequired: boolean;
+  currentPhase: PhaseName;
+  phases: Phase[];
+  sourceUrl: string;
+  lastUpdated: string;
+  applicationDeadline?: string;
+}
+
+export interface PSU {
+  id: string;
+  slug: string;
+  name: string;
+  fullName: string;
+  category: 'Maharatna' | 'Navratna' | 'Miniratna' | 'Bank' | 'Defence' | 'Research';
+  sector: string;
+  logoEmoji: string;
+  careerUrl: string;
+  color: string;
+  branches: Branch[];
+  salary: SalaryInfo;
+  activeRecruitments: number;
+  recruitments: Recruitment[];
+  typicalLocations: string[];
+}
+
+interface PSUCardProps {
   psu: PSU;
 }
 
-export default function PSUCard({ psu }: Props) {
-  const activeRecruitment = psu.recruitments.find(r => r.currentPhase !== 'final_joining') || psu.recruitments[0];
+export default function PSUCard({ psu }: PSUCardProps) {
+  const activeRecruitment = psu.recruitments[0];
+  const displayBranches = psu.branches.slice(0, 4);
+  const remainingBranches = psu.branches.length - 4;
+
+  const getDaysRemaining = (deadline?: string) => {
+    if (!deadline) return null;
+    const diff = new Date(deadline).getTime() - new Date().getTime();
+    return Math.max(0, Math.ceil(diff / (1000 * 3600 * 24)));
+  };
+
+  const daysRemaining = activeRecruitment ? getDaysRemaining(activeRecruitment.applicationDeadline) : null;
 
   return (
-    <div className="glass-card psu-card" style={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '24px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          <div style={{ 
-            width: '64px', height: '64px', borderRadius: '16px', 
-            background: `${psu.color}33`, /* 20% opacity */
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '32px'
-          }}>
-            {psu.logoEmoji}
-          </div>
-          <div>
-            <h3 style={{ margin: '0 0 4px 0', fontSize: '1.25rem' }}>{psu.name}</h3>
-            <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>{psu.fullName}</p>
-          </div>
+    <div className="glass-card psu-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div className="psu-card-accent" style={{ background: psu.color }}></div>
+      
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+        <div style={{
+          width: '48px', height: '48px', borderRadius: '50%',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px',
+          background: `${psu.color}26` // 15% opacity hex
+        }}>
+          {psu.logoEmoji}
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
-          <span className="badge" style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-primary)' }}>{psu.category}</span>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{psu.sector}</span>
+        <div style={{ flex: 1 }}>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '4px' }}>{psu.name}</h3>
+          <span className="badge badge-outline">{psu.category}</span>
         </div>
       </div>
-      
-      <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>
-        {psu.activeRecruitments > 0 ? (
-          <>
-            <span className="pulse-dot"></span>
-            <span style={{ color: 'var(--success)' }}>{psu.activeRecruitments} Active Recruitment{psu.activeRecruitments > 1 ? 's' : ''}</span>
-          </>
-        ) : (
-          <span style={{ color: 'var(--text-muted)' }}>No active recruitments</span>
+
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+        {displayBranches.map(b => (
+          <span key={b} className="branch-tag">{b}</span>
+        ))}
+        {remainingBranches > 0 && (
+          <span className="branch-tag" style={{ background: 'transparent' }}>+{remainingBranches} more</span>
         )}
       </div>
 
-      {activeRecruitment && psu.activeRecruitments > 0 && (
-        <div style={{ background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '8px', marginBottom: '24px', flex: 1 }}>
-          <div style={{ marginBottom: '12px', display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{activeRecruitment.title}</span>
-            {activeRecruitment.gateRequired && <span className="badge badge-outline" style={{ fontSize: '0.65rem' }}>GATE</span>}
-          </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+        <span className="salary-badge">{psu.salary.ctcRange}</span>
+        <span style={{ color: 'var(--border)' }}>•</span>
+        {psu.salary.hasBond ? (
+          <span className="bond-badge">{psu.salary.bondAmount} ({psu.salary.bondPeriod})</span>
+        ) : (
+          <span className="no-bond-badge">No Bond Required</span>
+        )}
+      </div>
+
+      {activeRecruitment && (
+        <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <PhasePipeline phases={activeRecruitment.phases} compact={true} />
+          {activeRecruitment.currentPhase === 'application_open' && daysRemaining !== null && (
+            <div style={{ fontSize: '0.8rem', color: 'var(--warning)', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span className="pulse-dot" style={{ background: 'var(--warning)', width: '6px', height: '6px' }}></span>
+              Closes in {daysRemaining} days
+            </div>
+          )}
         </div>
       )}
 
-      <div style={{ marginTop: 'auto' }}>
-        <Link href={`/psu/${psu.slug}`} className="btn btn-ghost" style={{ width: '100%', justifyContent: 'center' }}>
-          View Details &rarr;
+      <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+        <Link href={`/psu/${psu.slug}`} className="btn btn-ghost" style={{ flex: 1 }}>
+          View Details →
         </Link>
+        <a href={psu.careerUrl} target="_blank" rel="noopener noreferrer" className="btn btn-ghost" style={{ padding: '10px' }} title="Official Site">
+          ↗
+        </a>
       </div>
-
-      <style jsx>{`
-        .psu-card:hover {
-          transform: translateY(-4px);
-          border-color: var(--primary);
-          box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 1px var(--primary);
-        }
-      `}</style>
     </div>
   );
 }

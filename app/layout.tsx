@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
-import NavBar from "../components/NavBar";
+import NavBar from "@/components/NavBar";
+import { AuthProvider } from "@/context/AuthContext";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "PSUTrack | Unified PSU Recruitment Tracker",
-  description: "Track recruitments across 50+ Public Sector Undertakings. Know exactly where every recruitment stands.",
+  title: "PSUTrack",
+  description: "Track every PSU recruitment. Never miss a deadline.",
 };
 
 export default function RootLayout({
@@ -14,15 +18,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      </head>
-      <body>
-        <NavBar />
-        <main style={{ paddingTop: '64px', minHeight: 'calc(100vh - 64px)' }}>
+      <body className={inter.className} style={{ paddingTop: "96px" }}>
+        <AuthProvider>
+          <NavBar />
           {children}
-        </main>
+        </AuthProvider>
       </body>
     </html>
   );

@@ -73,6 +73,12 @@ a {
   transition: all 0.2s ease;
 }
 
+.glass-card:hover {
+  border-color: rgba(79, 110, 247, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
 .btn {
   font-family: 'Outfit', sans-serif;
   font-weight: 500;
@@ -108,6 +114,12 @@ a {
 .btn-ghost:hover {
   background: rgba(255, 255, 255, 0.05);
   transform: translateY(-2px);
+}
+
+.btn-track-active {
+  background: var(--success);
+  color: #000;
+  font-weight: 600;
 }
 
 .gradient-text {
@@ -227,4 +239,97 @@ select {
 input:focus, select:focus {
   border-color: var(--primary);
   background: rgba(255, 255, 255, 0.08);
+}
+
+/* New Design System Classes */
+.branch-tag {
+  background: rgba(79, 110, 247, 0.1);
+  color: var(--primary);
+  border: 1px solid rgba(79, 110, 247, 0.2);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+}
+
+.branch-tag.active {
+  background: var(--primary);
+  color: white;
+}
+
+.salary-badge {
+  background: rgba(34, 211, 165, 0.08);
+  color: var(--success);
+  border: 1px solid rgba(34, 211, 165, 0.15);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.bond-badge {
+  background: rgba(245, 158, 11, 0.08);
+  color: var(--warning);
+  border: 1px solid rgba(245, 158, 11, 0.15);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.no-bond-badge {
+  background: rgba(34, 211, 165, 0.08);
+  color: var(--success);
+  border: 1px solid rgba(34, 211, 165, 0.15);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.posts-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.posts-table th {
+  border-bottom: 1px solid var(--border);
+  padding: 12px;
+  text-align: left;
+}
+
+.posts-table td {
+  padding: 12px;
+  text-align: left;
+}
+
+.posts-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.posts-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.announcement-bar {
+  height: 32px;
+  background: rgba(79, 110, 247, 0.08);
+  border-bottom: 1px solid rgba(79, 110, 247, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  position: sticky;
+  top: 0;
+  z-index: 101;
+}
+
+.phase-bar {
+  display: flex;
+  gap: 4px;
+}
+
+.psu-card {
+  position: relative;
+  overflow: hidden;
 }
