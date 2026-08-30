@@ -1,6 +1,7 @@
 import { PSUS } from "@/lib/data";
 import { notFound } from "next/navigation";
 import ClientTabs from "./ClientTabs";
+import TrackButton from "@/components/TrackButton";
 
 export default async function PSUPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -13,34 +14,104 @@ export default async function PSUPage({ params }: { params: Promise<{ slug: stri
   const totalVacancies = psu.recruitments.reduce((sum, r) => sum + r.totalVacancies, 0);
 
   return (
-    <main className="max-w-5xl mx-auto px-4 py-8">
-      {/* Header */}
+    <main style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 24px' }}>
+      {/* Header Card */}
       <div 
-        className="rounded-2xl p-8 mb-8 text-white relative overflow-hidden flex flex-col md:flex-row items-center md:items-start gap-6 shadow-xl"
-        style={{ background: `linear-gradient(135deg, ${psu.color}, #1f2937)` }}
+        className="card"
+        style={{
+          padding: '28px',
+          marginBottom: '28px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '20px',
+          borderLeft: `4px solid ${psu.color}`,
+        }}
       >
-        <div className="text-8xl bg-white/20 p-4 rounded-2xl backdrop-blur-md">
-          {psu.logoEmoji}
-        </div>
-        <div className="flex-1 text-center md:text-left z-10">
-          <div className="flex flex-wrap gap-2 justify-center md:justify-start mb-2">
-            <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold backdrop-blur-md">{psu.category}</span>
-            <span className="px-3 py-1 bg-white/20 rounded-full text-xs font-semibold backdrop-blur-md">{psu.sector}</span>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-start', justifyContent: 'space-between', gap: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div 
+              style={{
+                width: '56px',
+                height: '56px',
+                borderRadius: '12px',
+                background: `${psu.color}20`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '28px',
+                flexShrink: 0,
+              }}
+            >
+              {psu.logoEmoji}
+            </div>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '4px' }}>
+                <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--text-1)' }}>{psu.name}</h1>
+                <span className="badge">{psu.category}</span>
+                <span className="badge">{psu.sector}</span>
+              </div>
+              <p style={{ fontSize: '0.95rem', color: 'var(--text-2)' }}>{psu.fullName}</p>
+            </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-2">{psu.fullName}</h1>
-          <p className="text-xl font-medium opacity-90 mb-6">{psu.name}</p>
-          
-          <div className="flex flex-wrap gap-4 justify-center md:justify-start items-center">
+
+          {/* Quick Actions */}
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
             <a 
               href={psu.careerUrl} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="bg-white text-gray-900 px-6 py-2 rounded-full font-bold hover:bg-gray-100 transition-colors shadow-md"
+              className="btn btn-ghost"
+              style={{ fontSize: '0.85rem' }}
             >
               Official Career Page ↗
             </a>
-            <div className="text-sm bg-black/20 px-4 py-2 rounded-lg backdrop-blur-md">
-              {totalVacancies} total posts | {psu.branches.length} disciplines
+            <div style={{ minWidth: '130px' }}>
+              <TrackButton psuId={psu.id} psuName={psu.name} />
+            </div>
+          </div>
+        </div>
+
+        {/* Salary & Key Stats Highlight Row */}
+        <div 
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+            gap: '12px',
+            padding: '16px',
+            background: 'var(--surface-2)',
+            borderRadius: '8px',
+            border: '1px solid var(--border)',
+          }}
+        >
+          <div>
+            <div className="label" style={{ marginBottom: '4px' }}>Estimated CTC</div>
+            <div style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-1)' }}>{psu.salary.ctcRange}</div>
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>In-hand: {psu.salary.inHandRange}</div>
+          </div>
+
+          <div>
+            <div className="label" style={{ marginBottom: '4px' }}>Grade & Scale</div>
+            <div style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--text-1)' }}>{psu.salary.grade}</div>
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>{psu.salary.payScale}</div>
+          </div>
+
+          <div>
+            <div className="label" style={{ marginBottom: '4px' }}>Service Bond</div>
+            <div style={{ fontSize: '0.95rem', fontWeight: 500, color: psu.salary.hasBond ? 'var(--warning)' : 'var(--success)' }}>
+              {psu.salary.hasBond ? `Required (${psu.salary.bondAmount})` : 'No Bond Required'}
+            </div>
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>
+              {psu.salary.hasBond ? `Period: ${psu.salary.bondPeriod}` : 'Full career flexibility'}
+            </div>
+          </div>
+
+          <div>
+            <div className="label" style={{ marginBottom: '4px' }}>Recruitment Status</div>
+            <div style={{ fontSize: '0.95rem', fontWeight: 500, color: 'var(--text-1)' }}>
+              {psu.recruitments.length} Active Notice{psu.recruitments.length !== 1 ? 's' : ''}
+            </div>
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>
+              {totalVacancies} Total Vacancies
             </div>
           </div>
         </div>
