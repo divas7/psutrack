@@ -4,125 +4,121 @@ import PSUCard from "@/components/PSUCard";
 
 export default function Home() {
   const topPSUs = PSUS.slice(0, 6);
-  
-  const branches = [
-    "⚡ Electrical",
-    "🖥️ CSE/IT",
-    "⚙️ Mechanical",
-    "🏗️ Civil",
-    "📡 Electronics"
-  ];
 
   return (
-    <main className="flex min-h-screen flex-col">
+    <main className="page-wrapper" style={{ paddingTop: '60px', paddingBottom: '60px' }}>
       {/* Hero Section */}
-      <section className="relative px-4 pt-20 pb-24 md:pt-32 md:pb-40 overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-        <div className="max-w-5xl mx-auto text-center z-10 relative">
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-6">
-            Track Every <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">PSU Recruitment</span>
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-10 max-w-3xl mx-auto font-medium leading-relaxed">
-            Never miss a deadline again. Get real-time updates on notifications, admit cards, and results for Maharatna, Navratna, and Miniratna companies.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Link 
-              href="/explore" 
-              className="px-8 py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl active:scale-95"
-            >
-              Explore PSUs
-            </Link>
-            <Link 
-              href="/dashboard" 
-              className="px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm active:scale-95"
-            >
-              Go to Dashboard
-            </Link>
-          </div>
-          
-          <div className="flex flex-wrap justify-center gap-3 mt-8">
-            <span className="text-sm font-medium text-gray-500 py-1.5">Quick Search:</span>
-            {branches.map(b => (
-              <Link key={b} href={`/explore?branch=${b}`} className="px-3 py-1.5 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-full text-sm font-medium hover:bg-white dark:hover:bg-gray-700 transition-colors">
-                {b}
-              </Link>
-            ))}
-            <Link href="/explore" className="px-3 py-1.5 text-blue-600 font-medium text-sm hover:underline">View All &rarr;</Link>
-          </div>
+      <section style={{ textAlign: 'center', padding: '60px 0', maxWidth: '800px', margin: '0 auto' }}>
+        <h1 style={{ fontSize: '3.5rem', fontWeight: 800, lineHeight: 1.1, marginBottom: '16px', color: '#fff' }}>
+          Track every PSU recruitment.<br/>
+          <span className="gradient-text">All in one place.</span>
+        </h1>
+        <p style={{ fontSize: '1.1rem', color: 'var(--text-2)', marginBottom: '32px', maxWidth: '600px', margin: '0 auto 32px' }}>
+          Never miss a deadline again. Get real-time updates on notifications, admit cards, and results for Maharatna, Navratna, and Miniratna companies.
+        </p>
+        
+        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginBottom: '40px' }}>
+          <Link href="/explore" className="btn btn-primary" style={{ fontSize: '1rem', padding: '12px 24px' }}>
+            Explore PSUs →
+          </Link>
+          <Link href="/dashboard" className="btn btn-ghost" style={{ fontSize: '1rem', padding: '12px 24px' }}>
+            How it works
+          </Link>
+        </div>
+
+        <div style={{ 
+          display: 'inline-flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap',
+          background: 'var(--surface)', padding: '10px 24px', 
+          borderRadius: '100px', border: '1px solid var(--border)',
+          fontSize: '0.85rem', color: 'var(--text-2)', justifyContent: 'center'
+        }}>
+          <span style={{ fontWeight: 600, color: 'var(--text-1)' }}>50+ PSUs</span>
+          <span style={{ color: 'var(--border-2)' }}>·</span>
+          <span style={{ fontWeight: 600, color: 'var(--text-1)' }}>14 Maharatnas</span>
+          <span style={{ color: 'var(--border-2)' }}>·</span>
+          <span>Updated 2× daily</span>
+          <span style={{ color: 'var(--border-2)' }}>·</span>
+          <span>Free forever</span>
         </div>
       </section>
+
+      <div className="divider" style={{ margin: '40px 0' }} />
 
       {/* Phase Explainer */}
-      <section className="py-20 px-4 bg-white dark:bg-gray-900 border-y border-gray-100 dark:border-gray-800">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">We track every stage</h2>
-            <p className="text-gray-500 text-lg max-w-2xl mx-auto">From the first notification to the final joining, we keep you updated at every step of the recruitment process.</p>
-          </div>
-          
-          <div className="flex flex-wrap justify-center gap-4 md:gap-8">
-            {['Notification', 'Application', 'Admit Card', 'Exam', 'Result', 'Joining'].map((step, i) => (
-              <div key={step} className="flex items-center">
-                <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-6 py-3 rounded-xl font-bold">
-                  <span className="text-blue-500 mr-2">{i+1}.</span> {step}
-                </div>
-                {i < 5 && <div className="hidden md:block w-8 h-0.5 bg-gray-300 dark:bg-gray-700 mx-4"></div>}
+      <section style={{ padding: '40px 0' }}>
+        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+          <h2 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '12px' }}>We track every stage</h2>
+          <p style={{ color: 'var(--text-2)', fontSize: '1rem' }}>From the first notification to the final joining, we keep you updated at every step.</p>
+        </div>
+        
+        <div style={{ 
+          display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '16px',
+          background: 'var(--surface)', border: '1px solid var(--border)', 
+          borderRadius: '12px', padding: '32px', maxWidth: '900px', margin: '0 auto'
+        }}>
+          {['Notification', 'Application', 'Admit Card', 'Exam', 'Result', 'Joining'].map((step, i) => (
+            <div key={step} style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{ fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-1)' }}>
+                <span style={{ color: 'var(--text-3)', marginRight: '6px' }}>0{i+1}</span>
+                {step}
               </div>
-            ))}
-          </div>
+              {i < 5 && <div style={{ width: '24px', height: '1px', background: 'var(--border)' }} />}
+            </div>
+          ))}
         </div>
       </section>
+
+      <div className="divider" style={{ margin: '40px 0' }} />
 
       {/* Grid */}
-      <section className="py-24 px-4 bg-gray-50 dark:bg-gray-800/50">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-end mb-12">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Top Recruiters</h2>
-              <p className="text-gray-500 text-lg">Most sought-after public sector companies</p>
-            </div>
-            <Link href="/explore" className="hidden md:inline-flex text-blue-600 font-bold hover:underline items-center gap-2">
-              View all PSUs <span aria-hidden="true">&rarr;</span>
-            </Link>
+      <section style={{ padding: '40px 0' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
+          <div>
+            <h2 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '8px' }}>Top Recruiters</h2>
+            <p style={{ color: 'var(--text-2)' }}>Most sought-after public sector companies</p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {topPSUs.map(psu => (
-              <PSUCard key={psu.id} psu={psu} />
-            ))}
-          </div>
-          
-          <div className="mt-12 text-center md:hidden">
-            <Link href="/explore" className="inline-flex text-blue-600 font-bold hover:underline items-center gap-2">
-              View all PSUs <span aria-hidden="true">&rarr;</span>
-            </Link>
-          </div>
+          <Link href="/explore" className="btn btn-ghost">
+            View all PSUs →
+          </Link>
+        </div>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
+          {topPSUs.map(psu => (
+            <PSUCard key={psu.id} psu={psu} />
+          ))}
         </div>
       </section>
+
+      <div className="divider" style={{ margin: '40px 0' }} />
 
       {/* Features */}
-      <section className="py-24 px-4 bg-white dark:bg-gray-900">
-        <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-12 text-center">
-          <div>
-            <div className="text-4xl mb-4">⚡</div>
-            <h3 className="text-xl font-bold mb-2">Real-time Updates</h3>
-            <p className="text-gray-500">Get notified the moment a notification drops or a result is declared.</p>
-          </div>
-          <div>
-            <div className="text-4xl mb-4">🎯</div>
-            <h3 className="text-xl font-bold mb-2">Smart Filtering</h3>
-            <p className="text-gray-500">Only see recruitments relevant to your engineering branch and qualifications.</p>
-          </div>
-          <div>
-            <div className="text-4xl mb-4">💰</div>
-            <h3 className="text-xl font-bold mb-2">Salary Insights</h3>
-            <p className="text-gray-500">Compare in-hand salary, perks, and bond conditions across different PSUs.</p>
-          </div>
+      <section style={{ padding: '40px 0' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+          {[
+            { icon: '⚡', title: 'Real-time Updates', desc: 'Get notified the moment a notification drops or a result is declared.' },
+            { icon: '🎯', title: 'Smart Filtering', desc: 'Only see recruitments relevant to your engineering branch and qualifications.' },
+            { icon: '💰', title: 'Salary Insights', desc: 'Compare in-hand salary, perks, and bond conditions across different PSUs.' }
+          ].map(feature => (
+            <div key={feature.title} className="card" style={{ padding: '32px', textAlign: 'center' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '16px' }}>{feature.icon}</div>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '8px', color: 'var(--text-1)' }}>{feature.title}</h3>
+              <p style={{ color: 'var(--text-2)', fontSize: '0.9rem', lineHeight: 1.6 }}>{feature.desc}</p>
+            </div>
+          ))}
         </div>
       </section>
 
+      <div className="divider" style={{ margin: '40px 0' }} />
+
       {/* Footer */}
-      <footer className="py-8 text-center text-gray-500 text-sm border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-black">
-        <p>&copy; {new Date().getFullYear()} PSUTrack. All rights reserved.</p>
+      <footer style={{ padding: '24px 0', textAlign: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', marginBottom: '16px' }}>
+          <Link href="#" style={{ color: 'var(--text-3)', fontSize: '0.9rem' }}>About</Link>
+          <Link href="#" style={{ color: 'var(--text-3)', fontSize: '0.9rem' }}>Privacy</Link>
+          <Link href="#" style={{ color: 'var(--text-3)', fontSize: '0.9rem' }}>Terms</Link>
+          <Link href="#" style={{ color: 'var(--text-3)', fontSize: '0.9rem' }}>Contact</Link>
+        </div>
+        <p style={{ color: 'var(--text-3)', fontSize: '0.8rem' }}>&copy; {new Date().getFullYear()} PSUTrack. All rights reserved.</p>
       </footer>
     </main>
   );

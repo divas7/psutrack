@@ -1,335 +1,332 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --bg-color: #080B14;
-  --surface: rgba(255, 255, 255, 0.04);
-  --primary: #4F6EF7;
-  --secondary: #A259FF;
-  --success: #22D3A5;
+  --bg: #09090B;
+  --surface: #111113;
+  --surface-2: #18181B;
+  --border: #1C1C1F;
+  --border-2: #3F3F46;
+  --primary: #6366F1;
+  --primary-dim: rgba(99, 102, 241, 0.12);
+  --success: #22C55E;
   --warning: #F59E0B;
-  --text-primary: #F0F4FF;
-  --text-muted: #8892A4;
-  --border: rgba(255, 255, 255, 0.08);
-  
-  --notification-out: #6366F1;
-  --application-open: #22D3A5;
-  --application-closed: #64748B;
-  --admit-card: #F59E0B;
-  --exam-date: #EF4444;
-  --result: #8B5CF6;
-  --final-joining: #10B981;
+  --danger: #EF4444;
+  --text-1: #F4F4F5;
+  --text-2: #A1A1AA;
+  --text-3: #71717A;
+
+  /* Phase colours - used ONLY on phase indicators */
+  --phase-notif: #818CF8;
+  --phase-apply: #34D399;
+  --phase-closed: #52525B;
+  --phase-admit: #FBBF24;
+  --phase-exam: #F87171;
+  --phase-result: #A78BFA;
+  --phase-join: #6EE7B7;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html,
+html { scroll-behavior: smooth; }
+
 body {
-  max-width: 100vw;
+  background: var(--bg);
+  color: var(--text-1);
+  font-family: 'Outfit', -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
-  background-color: var(--bg-color);
-  color: var(--text-primary);
-  font-family: 'Outfit', sans-serif;
-  scroll-behavior: smooth;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+a { color: inherit; text-decoration: none; }
+
+::selection { background: rgba(99, 102, 241, 0.25); }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: #27272A; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3F3F46; }
+
+/* ── Layout ─────────────────────────────── */
+
+.page-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
 }
 
-::selection {
-  background: rgba(79, 110, 247, 0.3);
-  color: #fff;
+/* ── Cards ──────────────────────────────── */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  transition: border-color 0.15s ease;
 }
 
-::-webkit-scrollbar {
-  width: 8px;
-}
+.card:hover { border-color: var(--border-2); }
 
-::-webkit-scrollbar-track {
-  background: var(--bg-color);
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-/* Utilities */
+/* keep .glass-card as alias for backward compat */
 .glass-card {
   background: var(--surface);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  transition: all 0.2s ease;
+  border-radius: 10px;
+  transition: border-color 0.15s ease;
 }
+.glass-card:hover { border-color: var(--border-2); }
 
-.glass-card:hover {
-  border-color: rgba(79, 110, 247, 0.3);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  transform: translateY(-2px);
-}
+/* ── Buttons ─────────────────────────────── */
 
 .btn {
-  font-family: 'Outfit', sans-serif;
-  font-weight: 500;
-  border-radius: 8px;
-  padding: 10px 20px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: none;
-  font-size: 1rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 7px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+  white-space: nowrap;
+  text-decoration: none;
 }
 
 .btn-primary {
   background: var(--primary);
-  color: white;
+  color: #fff;
 }
-
-.btn-primary:hover {
-  background: #3A55D4;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(79, 110, 247, 0.3);
-}
+.btn-primary:hover { opacity: 0.88; }
 
 .btn-ghost {
   background: transparent;
-  color: var(--text-primary);
+  color: var(--text-2);
   border: 1px solid var(--border);
 }
-
 .btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.05);
-  transform: translateY(-2px);
+  background: var(--surface-2);
+  color: var(--text-1);
+  border-color: var(--border-2);
 }
 
 .btn-track-active {
-  background: var(--success);
-  color: #000;
-  font-weight: 600;
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--success);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  font-weight: 500;
+}
+.btn-track-active:hover {
+  background: rgba(34, 197, 94, 0.18);
 }
 
+/* ── Typography ──────────────────────────── */
+
 .gradient-text {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  background: linear-gradient(135deg, #818CF8, #6366F1);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.badge {
-  padding: 4px 10px;
-  border-radius: 100px;
-  font-size: 0.75rem;
+.label {
+  font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+}
+
+/* ── Badges ──────────────────────────────── */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--surface-2);
+  color: var(--text-3);
+  border: 1px solid var(--border);
+  letter-spacing: 0.02em;
 }
 
 .badge-outline {
+  background: transparent;
+  color: var(--text-3);
   border: 1px solid var(--border);
-  color: var(--text-muted);
 }
 
-/* Phase Pills */
-.phase-pill {
-  padding: 6px 12px;
-  border-radius: 100px;
-  font-size: 0.8rem;
-  font-weight: 500;
+/* ── Branch tags ─────────────────────────── */
+/* Plain grey — NOT blue */
+.branch-tag {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-}
-
-.phase-pill.notification_out { background: rgba(99, 102, 241, 0.15); color: var(--notification-out); border: 1px solid rgba(99, 102, 241, 0.3); }
-.phase-pill.application_open { background: rgba(34, 211, 165, 0.15); color: var(--application-open); border: 1px solid rgba(34, 211, 165, 0.3); }
-.phase-pill.application_closed { background: rgba(100, 116, 139, 0.15); color: var(--application-closed); border: 1px solid rgba(100, 116, 139, 0.3); }
-.phase-pill.admit_card { background: rgba(245, 158, 11, 0.15); color: var(--admit-card); border: 1px solid rgba(245, 158, 11, 0.3); }
-.phase-pill.exam_date { background: rgba(239, 68, 68, 0.15); color: var(--exam-date); border: 1px solid rgba(239, 68, 68, 0.3); }
-.phase-pill.result { background: rgba(139, 92, 246, 0.15); color: var(--result); border: 1px solid rgba(139, 92, 246, 0.3); }
-.phase-pill.final_joining { background: rgba(16, 185, 129, 0.15); color: var(--final-joining); border: 1px solid rgba(16, 185, 129, 0.3); }
-
-/* Animations */
-.pulse-dot {
-  width: 8px;
-  height: 8px;
-  background-color: var(--success);
-  border-radius: 50%;
-  display: inline-block;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(34, 211, 165, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 0 6px rgba(34, 211, 165, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(34, 211, 165, 0);
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
-}
-
-.fade-in-up {
-  animation: fadeInUp 0.6s ease forwards;
-}
-
-/* Inputs */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-select {
-  width: 100%;
-  padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text-primary);
-  font-family: 'Outfit', sans-serif;
-  outline: none;
-  transition: all 0.2s;
-}
-
-input:focus, select:focus {
-  border-color: var(--primary);
-  background: rgba(255, 255, 255, 0.08);
-}
-
-/* New Design System Classes */
-.branch-tag {
-  background: rgba(79, 110, 247, 0.1);
-  color: var(--primary);
-  border: 1px solid rgba(79, 110, 247, 0.2);
-  border-radius: 4px;
+  font-size: 0.72rem;
   padding: 2px 8px;
-  font-size: 0.75rem;
+  border-radius: 4px;
+  background: var(--surface-2);
+  color: var(--text-3);
+  border: 1px solid var(--border);
+  white-space: nowrap;
 }
 
 .branch-tag.active {
-  background: var(--primary);
-  color: white;
+  background: var(--primary-dim);
+  color: var(--primary);
+  border-color: rgba(99, 102, 241, 0.25);
 }
 
+/* ── Phase Pills (for notification lists) ── */
+
+.phase-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.phase-pill.notification_out  { background: rgba(129,140,248,0.1); color: var(--phase-notif); }
+.phase-pill.application_open  { background: rgba(52,211,153,0.1);  color: var(--phase-apply); }
+.phase-pill.application_closed { background: rgba(82,82,91,0.15);   color: var(--phase-closed); }
+.phase-pill.admit_card        { background: rgba(251,191,36,0.1);  color: var(--phase-admit); }
+.phase-pill.exam_date         { background: rgba(248,113,113,0.1); color: var(--phase-exam); }
+.phase-pill.result            { background: rgba(167,139,250,0.1); color: var(--phase-result); }
+.phase-pill.final_joining     { background: rgba(110,231,183,0.1); color: var(--phase-join); }
+
+/* ── Salary / Bond (plain text approach) ── */
+/* These are just utility classes, used as inline spans */
+.salary-text {
+  font-size: 0.82rem;
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+/* Keep .salary-badge for compat but make it plain */
 .salary-badge {
-  background: rgba(34, 211, 165, 0.08);
-  color: var(--success);
-  border: 1px solid rgba(34, 211, 165, 0.15);
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
+  color: var(--text-2);
   font-weight: 500;
 }
 
 .bond-badge {
-  background: rgba(245, 158, 11, 0.08);
-  color: var(--warning);
-  border: 1px solid rgba(245, 158, 11, 0.15);
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-size: 0.72rem;
+  color: var(--text-3);
+}
+.no-bond-badge {
+  font-size: 0.72rem;
+  color: var(--success);
 }
 
-.no-bond-badge {
-  background: rgba(34, 211, 165, 0.08);
-  color: var(--success);
-  border: 1px solid rgba(34, 211, 165, 0.15);
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
+/* ── Posts table ─────────────────────────── */
 
 .posts-table {
   width: 100%;
   border-collapse: collapse;
+  font-size: 0.875rem;
 }
-
 .posts-table th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
   border-bottom: 1px solid var(--border);
-  padding: 12px;
-  text-align: left;
 }
-
 .posts-table td {
-  padding: 12px;
-  text-align: left;
+  padding: 11px 14px;
+  color: var(--text-2);
+  border-bottom: 1px solid var(--border);
 }
+.posts-table tbody tr:last-child td { border-bottom: none; }
+.posts-table tbody tr:hover { background: var(--surface-2); }
 
-.posts-table tbody tr {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-}
-
-.posts-table tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.02);
-}
+/* ── Announcement bar ────────────────────── */
 
 .announcement-bar {
-  height: 32px;
-  background: rgba(79, 110, 247, 0.08);
-  border-bottom: 1px solid rgba(79, 110, 247, 0.15);
+  height: 34px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
-  color: var(--text-muted);
+  font-size: 0.78rem;
+  color: var(--text-3);
   position: sticky;
   top: 0;
   z-index: 101;
+  gap: 16px;
 }
 
-.phase-bar {
-  display: flex;
-  gap: 4px;
+/* ── Pulse dot (active phase indicator) ─── */
+
+.pulse-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--success);
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulse-anim 2s infinite;
+  flex-shrink: 0;
 }
 
-.psu-card {
-  position: relative;
-  overflow: hidden;
+@keyframes pulse-anim {
+  0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+  70%  { box-shadow: 0 0 0 5px rgba(34,197,94,0); }
+  100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
 }
+
+/* ── Phase bar (compact card indicator) ─── */
+
+.phase-bar { display: flex; gap: 3px; align-items: center; }
+
+/* ── Inputs ──────────────────────────────── */
+
+input[type='text'],
+input[type='email'],
+input[type='password'],
+select {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text-1);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+input:focus, select:focus {
+  border-color: var(--primary);
+}
+input::placeholder { color: var(--text-3); }
+
+/* ── Divider ─────────────────────────────── */
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  width: 100%;
+}
+
+/* ── Utility ─────────────────────────────── */
+
+.fade-in-up {
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.psu-card { position: relative; overflow: hidden; }

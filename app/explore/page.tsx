@@ -44,32 +44,28 @@ export default function ExplorePage() {
   const totalActiveRecruitments = filteredPSUs.reduce((acc, psu) => acc + psu.activeRecruitments, 0);
 
   return (
-    <main className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Explore PSUs</h1>
+    <main className="page-wrapper" style={{ paddingTop: '40px', paddingBottom: '60px' }}>
+      <h1 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '24px' }}>Explore PSUs</h1>
       
-      <div className="mb-8 space-y-4">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '32px' }}>
         {/* Search */}
-        <div className="w-full md:w-96">
+        <div style={{ maxWidth: '400px' }}>
           <input
             type="text"
             placeholder="Search PSUs..."
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
-            className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
           />
         </div>
 
         {/* Branch Filters */}
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
           {branches.map((branch) => (
             <button
               key={branch}
               onClick={() => setSelectedBranch(branch)}
-              className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                selectedBranch === branch
-                  ? "bg-blue-600 text-white branch-tag active"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 branch-tag"
-              }`}
+              className={`branch-tag ${selectedBranch === branch ? 'active' : ''}`}
+              style={{ cursor: 'pointer', padding: '6px 12px', fontSize: '0.85rem' }}
             >
               {branch}
             </button>
@@ -77,16 +73,13 @@ export default function ExplorePage() {
         </div>
 
         {/* Category Filters */}
-        <div className="flex gap-2 flex-wrap">
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
-              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                selectedCategory === category
-                  ? "bg-purple-600 text-white"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-              }`}
+              className={`branch-tag ${selectedCategory === category ? 'active' : ''}`}
+              style={{ cursor: 'pointer', padding: '4px 10px', fontSize: '0.8rem' }}
             >
               {category}
             </button>
@@ -94,19 +87,19 @@ export default function ExplorePage() {
         </div>
       </div>
 
-      <div className="mb-6 text-gray-600 dark:text-gray-400 font-medium">
+      <div style={{ color: 'var(--text-3)', fontSize: '0.9rem', marginBottom: '24px' }}>
         {filteredPSUs.length} PSUs found &middot; {totalActiveRecruitments} active recruitments
       </div>
 
       {filteredPSUs.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
           {filteredPSUs.map((psu) => (
             <PSUCard key={psu.id} psu={psu} />
           ))}
         </div>
       ) : (
-        <div className="text-center py-20 text-gray-500">
-          <p className="text-xl">No PSUs found. Try changing your filters.</p>
+        <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-3)' }}>
+          <p style={{ fontSize: '1.1rem' }}>No PSUs found. Try changing your filters.</p>
         </div>
       )}
     </main>
