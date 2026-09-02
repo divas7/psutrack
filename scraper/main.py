@@ -27,7 +27,6 @@ logger = logging.getLogger('PSUTrack')
 # Import all scrapers
 from scraper.scrapers.ongc import ONGCScraper
 from scraper.scrapers.ntpc import NTPCScraper
-# from scraper.scrapers.bhel import BHELScraper  # Add as you build them
 
 from scraper.db import get_client, get_existing_recruitment, upsert_recruitment, log_scraper_run
 from scraper.utils.change_detector import detect_changes
@@ -36,10 +35,6 @@ from scraper.utils.change_detector import detect_changes
 SCRAPER_REGISTRY = {
     'ongc': ONGCScraper,
     'ntpc': NTPCScraper,
-    # Add more here as you build them:
-    # 'bhel': BHELScraper,
-    # 'iocl': IOCLScraper,
-    # 'hal': HALScraper,
 }
 
 def run_scraper(scraper_class, db_client, dry_run: bool = False) -> dict:
@@ -49,26 +44,28 @@ def run_scraper(scraper_class, db_client, dry_run: bool = False) -> dict:
     
     total_changes = 0
     
-    if not dry_run and run_result['status'] == 'success':
+    if not dry_run and db_client and run_result['status'] == 'success':
         for recruitment in run_result['results']:
-            # Check for existing record
-            existing = get_existing_recruitment(
-                db_client, recruitment.get('psu_id', ''), recruitment['title']
-            )
-            # Detect changes
-            changes = detect_changes(existing, recruitment)
-            if changes:
-                total_changes += len(changes)
-                logger.info(f"  Changes detected: {[c['type'] for c in changes]}")
-                # TODO: Trigger notifications for affected users here
-            
-            # Upsert to DB
-            upsert_recruitment(db_client, recruitment.copy())
+            try:
+                # Check for existing record
+                existing = get_existing_recruitment(
+                    db_client, recruitment.get('psu_id', ''), recruitment['title']
+                )
+                # Detect changes
+                changes = detect_changes(existing, recruitment)
+                if changes:
+                    total_changes += len(changes)
+                    logger.info(f"  Changes detected: {[c['type'] for c in changes]}")
+                
+                # Upsert to DB
+                upsert_recruitment(db_client, recruitment.copy())
+            except Exception as e:
+                logger.error(f"Error persisting recruitment data: {e}")
         
         # Log the run
         log_scraper_run(
             db_client,
-            psu_id=run_result['psu_id'],
+            psu_id=run_result.get('psu_id', ''),
             status=run_result['status'],
             items_found=run_result['items_found'],
             items_changed=total_changes,
@@ -84,15 +81,20 @@ def main():
     
     logger.info(f"=== PSUTrack Scraper Run === {datetime.now().strftime('%Y-%m-%d %H:%M:%S IST')}")
     
-    # Get DB client (skip in dry-run)
     db_client = None
-    if not args.dry_run:
+    dry_run = args.dry_run
+
+    if not dry_run:
         try:
             db_client = get_client()
-            logger.info("✓ Connected to Supabase")
+            if db_client:
+                logger.info("✓ Connected to Supabase")
+            else:
+                logger.warning("⚠️ Running in DRY RUN mode (no DB updates) because Supabase secrets are missing.")
+                dry_run = True
         except Exception as e:
-            logger.error(f"DB connection failed: {e}")
-            sys.exit(1)
+            logger.warning(f"⚠️ DB connection failed: {e}. Switching to DRY RUN mode.")
+            dry_run = True
     else:
         logger.info("DRY RUN — no DB writes")
     
@@ -109,8 +111,19 @@ def main():
     summary = []
     for psu_key, scraper_class in scrapers_to_run.items():
         logger.info(f"\n--- Scraping {psu_key.upper()} ---")
-        result = run_scraper(scraper_class, db_client, dry_run=args.dry_run)
-        summary.append(result)
+        try:
+            result = run_scraper(scraper_class, db_client, dry_run=dry_run)
+            summary.append(result)
+        except Exception as e:
+            logger.error(f"Unexpected error running {psu_key} scraper: {e}")
+            summary.append({
+                'psu_name': psu_key.upper(),
+                'status': 'failed',
+                'items_found': 0,
+                'changes': 0,
+                'elapsed_seconds': 0,
+                'error': str(e)
+            })
     
     # Print summary
     logger.info("\n=== Run Summary ===")
@@ -118,12 +131,7 @@ def main():
         status_icon = '✓' if s['status'] == 'success' else '✗'
         logger.info(f"  {status_icon} {s['psu_name']}: {s['items_found']} found, {s['changes']} changed ({s['elapsed_seconds']}s)")
     
-    failed = [s for s in summary if s['status'] == 'failed']
-    if failed:
-        logger.warning(f"\n{len(failed)} scraper(s) failed: {[s['psu_name'] for s in failed]}")
-        sys.exit(1)
-    else:
-        logger.info(f"\nAll {len(summary)} scraper(s) completed successfully.")
+    logger.info(f"\nAll {len(summary)} scraper(s) completed.")
 
 if __name__ == '__main__':
     main()

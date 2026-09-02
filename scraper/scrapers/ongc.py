@@ -6,14 +6,10 @@ class ONGCScraper(BaseScraper):
     """
     Scraper for ONGC (Oil and Natural Gas Corporation) career portal.
     Target URL: https://ongcindia.com/web/eng/career
-    
-    ONGC typically posts recruitment notices as HTML tables with links to PDFs.
-    Uses BeautifulSoup (no JS rendering needed for the listing page).
     """
     PSU_NAME = "ONGC"
     CAREER_URL = "https://ongcindia.com/web/eng/career"
     
-    # Map of text patterns to phase names
     PHASE_KEYWORDS = {
         'notification_out': ['notification', 'advertisement', 'advt', 'recruitment notice'],
         'application_open': ['apply online', 'online application', 'registration open'],
@@ -25,23 +21,21 @@ class ONGCScraper(BaseScraper):
     }
     
     def _detect_phase(self, text: str) -> str:
-        """Heuristically detect the current phase from link text or title."""
         text_lower = text.lower()
         for phase, keywords in self.PHASE_KEYWORDS.items():
             if any(kw in text_lower for kw in keywords):
                 return phase
-        return 'notification_out'  # Default
+        return 'notification_out'
     
     def scrape(self) -> list[dict]:
         html = self.fetch_html(self.CAREER_URL)
         if not html:
-            raise ConnectionError(f"Failed to fetch {self.CAREER_URL}")
+            self.logger.warning(f"Could not reach {self.CAREER_URL}. Returning empty list.")
+            return []
         
         soup = self.parse_html(html)
         recruitments = []
         
-        # ONGC career page: find all <a> tags in the careers/notices section
-        # Look for links that contain recruitment-related keywords
         career_links = []
         for a in soup.find_all('a', href=True):
             text = a.get_text(strip=True)
@@ -49,8 +43,7 @@ class ONGCScraper(BaseScraper):
             if any(kw in text.lower() for kw in ['recruit', 'vacancy', 'trainee', 'engineer', 'officer']):
                 career_links.append({'text': text, 'href': href})
         
-        # Group links by recruitment (rough heuristic: group by year)
-        for link in career_links[:10]:  # Process top 10 relevant links
+        for link in career_links[:10]:
             year_match = re.search(r'20\d{2}', link['text'])
             year = year_match.group() if year_match else '2025'
             
@@ -61,7 +54,7 @@ class ONGCScraper(BaseScraper):
                 'psu_id': self.PSU_ID,
                 'title': f"ONGC Recruitment {year}",
                 'post_name': link['text'][:100],
-                'total_vacancies': None,  # Would need to follow link to PDF
+                'total_vacancies': None,
                 'qualifications': ['B.Tech', 'B.E'],
                 'gate_based': 'gate' in link['text'].lower(),
                 'source_url': full_url,

@@ -8,15 +8,34 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-def get_client() -> Client:
-    url = os.environ.get('SUPABASE_URL')
-    key = os.environ.get('SUPABASE_SERVICE_ROLE_KEY')  # Use service role key in scraper
+def get_client() -> Optional[Client]:
+    """
+    Get a Supabase client using environment variables.
+    Checks SUPABASE_URL, NEXT_PUBLIC_SUPABASE_URL
+    and SUPABASE_SERVICE_ROLE_KEY, SUPABASE_ANON_KEY, NEXT_PUBLIC_SUPABASE_ANON_KEY.
+    """
+    url = os.environ.get('SUPABASE_URL') or os.environ.get('NEXT_PUBLIC_SUPABASE_URL')
+    key = (
+        os.environ.get('SUPABASE_SERVICE_ROLE_KEY') or 
+        os.environ.get('SUPABASE_ANON_KEY') or 
+        os.environ.get('NEXT_PUBLIC_SUPABASE_ANON_KEY')
+    )
+    
     if not url or not key:
-        raise ValueError("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set")
-    return create_client(url, key)
+        logger.error("❌ Missing Supabase Environment Variables!")
+        logger.error("Please add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_ANON_KEY) to your GitHub Repository Secrets.")
+        return None
+        
+    try:
+        return create_client(url, key)
+    except Exception as e:
+        logger.error(f"❌ Failed to initialize Supabase client: {e}")
+        return None
 
 def get_existing_recruitment(client: Client, psu_id: str, title: str) -> Optional[dict]:
     """Fetch an existing recruitment record by PSU ID and title."""
+    if not client:
+        return None
     try:
         result = client.table('recruitments') \
             .select('*, phases(*)') \
@@ -32,6 +51,8 @@ def get_existing_recruitment(client: Client, psu_id: str, title: str) -> Optiona
 
 def upsert_recruitment(client: Client, recruitment: dict) -> Optional[str]:
     """Insert or update a recruitment record. Returns the recruitment ID."""
+    if not client:
+        return None
     try:
         phases = recruitment.pop('phases', [])
         result = client.table('recruitments') \
@@ -52,6 +73,8 @@ def upsert_recruitment(client: Client, recruitment: dict) -> Optional[str]:
 def log_scraper_run(client: Client, psu_id: str, status: str, 
                      items_found: int, items_changed: int, error: Optional[str] = None):
     """Log the result of a scraper run to the scraper_logs table."""
+    if not client:
+        return
     try:
         client.table('scraper_logs').insert({
             'psu_id': psu_id,
@@ -65,9 +88,11 @@ def log_scraper_run(client: Client, psu_id: str, status: str,
 
 def get_users_watching_psu(client: Client, psu_id: str) -> list[dict]:
     """Get all users who are watching a given PSU."""
+    if not client:
+        return []
     try:
         result = client.table('user_watchlist') \
-            .select('user_id, notify_email, auth.users(email)') \
+            .select('user_id, notify_email') \
             .eq('psu_id', psu_id) \
             .eq('notify_email', True) \
             .execute()

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import httpx
+import requests
 import logging
 import time
 from bs4 import BeautifulSoup
@@ -14,66 +15,56 @@ class BaseScraper(ABC):
     PSU_ID: str = ""    # Supabase UUID of this PSU
     PSU_NAME: str = ""  # Human-readable name
     CAREER_URL: str = "" # The URL to scrape
-    REQUEST_DELAY: float = 3.0  # Seconds between requests (be respectful)
+    REQUEST_DELAY: float = 2.0  # Seconds between requests
     
     def __init__(self):
-        self.ua = UserAgent()
+        try:
+            self.ua = UserAgent()
+            user_agent = self.ua.random
+        except Exception:
+            user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+            
         self.logger = logging.getLogger(self.__class__.__name__)
         self.headers = {
-            'User-Agent': self.ua.random,
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.5',
+            'User-Agent': user_agent,
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.9',
             'Accept-Encoding': 'gzip, deflate, br',
             'Connection': 'keep-alive',
         }
     
     def fetch_html(self, url: str, verify_ssl: bool = False) -> Optional[str]:
-        """Fetch raw HTML from a URL with retry logic."""
+        """Fetch raw HTML from a URL with retry logic using httpx and requests fallback."""
         for attempt in range(3):
             try:
-                with httpx.Client(verify=verify_ssl, timeout=30) as client:
+                with httpx.Client(verify=verify_ssl, timeout=30, follow_redirects=True) as client:
                     resp = client.get(url, headers=self.headers)
-                    resp.raise_for_status()
+                    if resp.status_code == 200:
+                        time.sleep(self.REQUEST_DELAY)
+                        return resp.text
+            except Exception as e:
+                self.logger.warning(f"httpx attempt {attempt+1} failed for {url}: {e}")
+                
+            # Fallback to requests if httpx fails
+            try:
+                resp = requests.get(url, headers=self.headers, timeout=30, verify=False)
+                if resp.status_code == 200:
                     time.sleep(self.REQUEST_DELAY)
                     return resp.text
             except Exception as e:
-                self.logger.warning(f"Attempt {attempt+1} failed for {url}: {e}")
-                time.sleep(5 * (attempt + 1))
-        self.logger.error(f"All 3 attempts failed for {url}")
+                self.logger.warning(f"requests attempt {attempt+1} failed for {url}: {e}")
+                
+            time.sleep(3 * (attempt + 1))
+            
+        self.logger.error(f"All fetch attempts failed for {url}")
         return None
     
     def parse_html(self, html: str) -> BeautifulSoup:
         """Parse HTML string into BeautifulSoup object."""
-        return BeautifulSoup(html, 'lxml')
+        return BeautifulSoup(html, 'html.parser')
     
     @abstractmethod
     def scrape(self) -> list[dict]:
-        """
-        Main scraping method. Must be implemented by each PSU subclass.
-        Returns a list of recruitment dicts matching the DB schema:
-        [
-            {
-                'psu_id': str,
-                'title': str,
-                'post_name': str,
-                'total_vacancies': int | None,
-                'qualifications': list[str],
-                'gate_based': bool,
-                'source_url': str,
-                'current_phase': str,  # phase enum value
-                'phases': [
-                    {
-                        'phase_name': str,
-                        'phase_status': str,  # pending|active|completed
-                        'start_date': str | None,  # YYYY-MM-DD
-                        'end_date': str | None,
-                        'source_link': str | None,
-                        'notes': str | None,
-                    }
-                ]
-            }
-        ]
-        """
         pass
     
     def run(self) -> dict:
