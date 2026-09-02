@@ -30,6 +30,7 @@ from scraper.scrapers.ntpc import NTPCScraper
 
 from scraper.db import get_client, get_existing_recruitment, upsert_recruitment, log_scraper_run
 from scraper.utils.change_detector import detect_changes
+from scraper.utils.notifier import send_run_summary_email
 
 # Registry of all active scrapers
 SCRAPER_REGISTRY = {
@@ -131,6 +132,9 @@ def main():
         status_icon = '✓' if s['status'] == 'success' else '✗'
         logger.info(f"  {status_icon} {s['psu_name']}: {s['items_found']} found, {s['changes']} changed ({s['elapsed_seconds']}s)")
     
+    # Send email summary report if RESEND_API_KEY & NOTIFICATION_EMAIL are present
+    send_run_summary_email(summary)
+
     logger.info(f"\nAll {len(summary)} scraper(s) completed.")
 
 if __name__ == '__main__':
