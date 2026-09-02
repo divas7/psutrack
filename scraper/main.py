@@ -27,15 +27,41 @@ logger = logging.getLogger('PSUTrack')
 # Import all scrapers
 from scraper.scrapers.ongc import ONGCScraper
 from scraper.scrapers.ntpc import NTPCScraper
+from scraper.scrapers.bhel import BHELScraper
+from scraper.scrapers.iocl import IOCLScraper
+from scraper.scrapers.gail import GAILScraper
+from scraper.scrapers.hal import HALScraper
+from scraper.scrapers.bel import BELScraper
+from scraper.scrapers.sail import SAILScraper
+from scraper.scrapers.power_grid import PowerGridScraper
+from scraper.scrapers.isro import ISROScraper
+from scraper.scrapers.drdo import DRDOScraper
+from scraper.scrapers.coal_india import CoalIndiaScraper
+from scraper.scrapers.hpcl import HPCLScraper
+from scraper.scrapers.barc import BARCScraper
+from scraper.scrapers.sbi import SBIScraper
 
 from scraper.db import get_client, get_existing_recruitment, upsert_recruitment, log_scraper_run
 from scraper.utils.change_detector import detect_changes
 from scraper.utils.notifier import send_run_summary_email
 
-# Registry of all active scrapers
+# Registry of all 15 active scrapers
 SCRAPER_REGISTRY = {
     'ongc': ONGCScraper,
     'ntpc': NTPCScraper,
+    'bhel': BHELScraper,
+    'iocl': IOCLScraper,
+    'gail': GAILScraper,
+    'hal': HALScraper,
+    'bel': BELScraper,
+    'sail': SAILScraper,
+    'power-grid': PowerGridScraper,
+    'isro': ISROScraper,
+    'drdo': DRDOScraper,
+    'coal-india': CoalIndiaScraper,
+    'hpcl': HPCLScraper,
+    'barc': BARCScraper,
+    'sbi': SBIScraper,
 }
 
 def run_scraper(scraper_class, db_client, dry_run: bool = False) -> dict:
